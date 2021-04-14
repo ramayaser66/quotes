@@ -20,10 +20,10 @@ public class AppTest {
 
         Reader reader = new FileReader("./src/main/resources/recentquotes.json");
 
-        RecentQuotes[] quoteObj = gson.fromJson(reader, RecentQuotes[].class);
+        JsonFileLines[] quoteObj = gson.fromJson(reader, JsonFileLines[].class);
 
         Random r = new Random();
-        int rand = r.nextInt(quoteObj.length)+1;
+        int rand = r.nextInt(quoteObj.length);
 
 //        System.out.println(quoteObj[rand].equals(quoteObj[rand]));
 
@@ -31,6 +31,28 @@ public class AppTest {
         assertTrue("an error occurred with the Json file",quoteObj[rand].equals(quoteObj[rand]) );
 
     }
+
+
+
+    @Test public void testQuotesFile() throws FileNotFoundException {
+        Gson gson = new Gson();
+
+        Reader reader = new FileReader("./src/main/resources/recentquotes.json");
+
+        JsonFileLines[] quoteObj = gson.fromJson(reader, JsonFileLines[].class);
+
+        // Random r = new Random();
+        // int rand = r.nextInt(quoteObj.length);
+
+
+
+
+
+
+        assertTrue("an error occurred with the Json file", quoteObj.length > 0);
+
+    }
+    
 
 
 }

@@ -4,34 +4,131 @@
 package quotes;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Array;
+import java.util.Arrays;
 import java.util.Random;
 
 public class App {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args){
 
+        String apiUrl = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
+        String  reader ="./app/src/main/resources/recentquotes.json";
+
+        try {
+            URL url = new URL(apiUrl);
+            String data = getDataFromApi(url);
+            ApiInfo quote = getApiInfo(data);
+            System.out.println(quote);
+
+            storeJsonIntoFile(reader, quote);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getDataFromApi(URL url) throws IOException {
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        int status = con.getResponseCode();
+        String contact = "";
+        if(status == 200){
+            BufferedReader reader = getBufferedReader(con);
+            contact = getContent(reader);
+            reader.close();
+        }
+        else{
+            System.out.println(jsonFile());
+            System.out.println("error"+status);
+        }
+        con.disconnect();
+        return contact;
+    }
+
+    private static BufferedReader getBufferedReader(HttpURLConnection con) throws IOException{
+        return new BufferedReader(new InputStreamReader(con.getInputStream()));
+    }
+
+    private static String getContent(BufferedReader reader) throws IOException{
+        StringBuilder builder = new StringBuilder();
+        String line = reader.readLine();
+        while(line!=null){
+            builder.append(line);
+            line = reader.readLine();
+        }
+        return builder.toString();
+    }
+
+    private static ApiInfo getApiInfo(String data){
         Gson gson = new Gson();
-//        E:\lab-8\quotes/app/src/main/resources/recentquotes.json
-//        Reader reader = new FileReader();
+        ApiInfo obj = gson.fromJson(data, ApiInfo.class);
+        return obj;
+    }
 
+    private static JsonFileLines jsonFile() throws FileNotFoundException{
+        Gson gson = new Gson();
         Reader reader = new FileReader("./app/src/main/resources/recentquotes.json");
 
-//        System.out.println(reader);
-        RecentQuotes[] quoteObj = gson.fromJson(reader, RecentQuotes[].class);
 
-        Random r = new Random();
-        int rand = r.nextInt(quoteObj.length)+1;
+        JsonFileLines[] quoteObj = gson.fromJson(reader, JsonFileLines[].class);
 
-        System.out.println(quoteObj[rand].equals(quoteObj[rand]));
+           Random r = new Random();
+        int rand = r.nextInt(quoteObj.length);
 
-        System.out.println(quoteObj[rand].toString());
+
+        return quoteObj[rand];
+    }
+
+
+
+
+
+
+
+
+
+
+    public static void storeJsonIntoFile (String filename, ApiInfo quote) throws Exception{
+        JSONObject newObj = new JSONObject();
+
+        JSONArray newJsonFile = new JSONArray();
+
+    
+        newObj.put("author", quote.quoteAuthor);
+        newObj.put("text", quote.quoteText);
+        newJsonFile.add(newObj);
+ 
+        Files.write(Paths.get(filename), newJsonFile.toJSONString().getBytes());
+     
+
+
 
     }
 
+
+
+
+
+
+
+
+
+
 }
-
-

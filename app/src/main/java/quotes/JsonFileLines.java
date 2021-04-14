@@ -2,7 +2,8 @@ package quotes;
 
 import java.util.Objects;
 
-public class RecentQuotes {
+public class JsonFileLines {
+
     String author;
     String text;
 
@@ -11,8 +12,8 @@ public class RecentQuotes {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RecentQuotes quotes = (RecentQuotes) o;
-        return Objects.equals(author, quotes.author) && Objects.equals(text, quotes.text);
+        JsonFileLines that = (JsonFileLines) o;
+        return Objects.equals(author, that.author) && Objects.equals(text, that.text);
     }
 
     @Override
@@ -22,7 +23,7 @@ public class RecentQuotes {
 
     @Override
     public String toString() {
-        return "RecentQuotes{" +
+        return "JsonFileLines{" +
                 "author='" + author + '\'' +
                 ", text='" + text + '\'' +
                 '}';
